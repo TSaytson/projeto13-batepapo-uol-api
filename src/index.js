@@ -83,19 +83,51 @@ app.get('/participants', async (req, res) => {
         res.sendStatus(500);
     }
 
-})
-app.post('/messages', (req, res) => {
-    if (!req.headers.user) return res.status(400).send('Usuário inválido');
-    if (!req.body.tweet) return res.status(400).send('Tweet inválido');
-    const tweet = {
-        username: req.headers.user,
-        tweet: req.body.tweet
-    }
-    tweets.push(tweet);
-    return res.status(201).send('Tweet criado');
 });
 
-app.get('/participants', (req, res) => {
+app.post('/messages', async (req, res) => {
+    if (!req.headers.user) return res.sendStatus(422);
+    if (!req.body.to || !req.body.text || !req.body.type) return res.sendStatus(422);
+    
+    const validation = messageSchema
+        .validate(req.body, { abortEarly: false });
+    
+    if (validation.error) {
+        const errors = validation.error.details
+            .map((detail) => detail.message);
+        console.log(errors);
+        return res.sendStatus(422);
+    }
+
+    try {
+        console.log('try')
+        const participantFound = await db
+            .collection('participants')
+            .findOne({ name: req.headers.user });
+        if (!participantFound)
+            return res.sendStatus(422);
+        
+        const message = {
+            from: req.headers.user,
+            to: req.body.to,
+            text: req.body.text,
+            type: req.body.type,
+            time: dayjs(Date.now()).format('HH:mm:ss')
+        }
+
+        await db.collection('messages')
+            .insertOne(message);
+        
+        return res.sendStatus(201);
+    }
+
+    catch (error) {
+        console.log(error);
+        res.sendStatus(500);
+    }
+});
+
+app.get('/messages', async (req, res) => {
     if (req.query.page < 1)
         return res.status(400).send('Informe uma página válida!');
 
