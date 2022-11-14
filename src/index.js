@@ -100,7 +100,6 @@ app.post('/messages', async (req, res) => {
     }
 
     try {
-        console.log('try')
         const participantFound = await db
             .collection('participants')
             .findOne({ name: req.headers.user });
@@ -128,30 +127,33 @@ app.post('/messages', async (req, res) => {
 });
 
 app.get('/messages', async (req, res) => {
-    if (req.query.page < 1)
-        return res.status(400).send('Informe uma página válida!');
-
-    tweets.map((tweet) => {
-        tweet.avatar = (users.find((user) => user.username === tweet.username)).avatar;
-    });
-
-    const lastTweets = [];
-
-    for (let i = 1; i < 11; i++) {
-        if(tweets[tweets.length - i])
-        lastTweets.push(tweets[tweets.length - i]);
+    try {
+        const messages = await db
+            .collection('messages')
+            .find()
+            .toArray();
+        console.log(messages);
+        if (req.query.limit) {
+            const limitedMessages = [];
+            for (let i = 0; (
+                i < messages.length) &&
+                (i < req.query.limit);
+                i++) {
+                limitedMessages.push(messages[i]);
+            }
+            res.status(200).send(limitedMessages);
+        }
+        else {
+            return res.status(200).send(messages);
+        }
     }
-    return res.status(201).send(lastTweets);
+    catch (error) {
+        console.log(error);
+        return res.sendStatus(500);
+    }
 
 });
 
-app.get('/messages', (req, res) => {
-    const tweetsFrom = tweets.filter((tweet) => tweet.username === req.params.USERNAME);
-    if (tweetsFrom.length === 0)
-        return res.status(404).send('Usuário sem Tweets');
-
-    return res.status(200).send(tweetsFrom);
-})
 
 app.post('/status', (req, res) => {
 
