@@ -5,10 +5,10 @@ export async function getParticipants(req, res){
     try{
         const participants = await db.
         collection('participants').find().toArray();
-        res.status(200).send(participants);
+        return res.status(200).send(participants);
     } catch(error){
         console.log(error);
-        res.status(500).send(error.message);
+        return res.status(500).send(error.message);
     }
 
 }
@@ -29,9 +29,29 @@ export async function registerParticipant(req, res){
             time: dayjs(Date.now()).format('HH:mm:ss')
         })
 
-        res.status(201).send('Participante registrado');
+        return res.status(201).send('Participante registrado');
     } catch(error){
         console.log(error);
-        res.status(500).send(error.message);
+        return res.status(500).send(error.message);
+    }
+}
+
+export async function updateParticipant(req, res){
+    const {user} = req.headers;
+    try {
+        const userFound = await db
+        .collection('participants').findOne({name:user});
+        if (!userFound)
+            return res.status(404).send('Usuário não encontrado');
+        else{
+            await db.collection('participants').
+            updateOne({name:user}, {$set: {
+                lastStatus: dayjs(Date.now()).format('HH:mm:ss')
+            }});
+        }
+        res.sendStatus(200);
+    } catch(error){
+        console.log(error);
+        return res.status(500).send(error.message);
     }
 }
