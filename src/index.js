@@ -11,4 +11,4 @@ app.use(messagesRoutes);
 
 
 
-app.listen(5001, console.log('Server running on port 5000'));
+app.listen(5000, console.log('Server running on port 5000'));
