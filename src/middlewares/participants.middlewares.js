@@ -20,7 +20,6 @@ export async function participantValidation(req, res, next){
         const userFound = await db
         .collection('participants')
         .findOne({name});
-        console.log(userFound);
         if (userFound)
             return res.status(409).send('Usuário já cadastrado');
     } catch(error){
