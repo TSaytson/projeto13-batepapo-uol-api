@@ -5,7 +5,6 @@ export async function messageValidation(req, res, next){
     const validation = messageSchema.validate(
         req.body, {abortEarly:false}
     );
-    const {from} = req.headers;
 
     if (validation.error){
         const errors = validation.error.details
@@ -15,8 +14,8 @@ export async function messageValidation(req, res, next){
     }
 
     const {to, text, type} = req.body;
-
-    if (!to || !text || !type || !from)
+    const {from} = req.headers;
+    if (!from)
         return res.sendStatus(422);
 
     try {

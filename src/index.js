@@ -25,7 +25,7 @@ setInterval(async () => {
                     return {
                     from: participant.name,
                     to: 'Todos',
-                    text: 'Sai da sala...',
+                    text: 'sai da sala...',
                     type: 'status',
                     time: dayjs().format('HH:mm:ss')
                     }
