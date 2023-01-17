@@ -23,7 +23,7 @@ export async function postMessage(req, res) {
 export async function getMessages(req, res) {
     const { limit } = req.query;
     const {user} = req.headers;
-    if (limit <= 0 || isNaN(limit))
+    if (Number(limit) <= 0 || (limit && isNaN(limit)))
         return res.sendStatus(422)
 
     try {
