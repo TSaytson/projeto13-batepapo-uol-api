@@ -10,30 +10,30 @@ export async function messageValidation(req, res, next){
         const errors = validation.error.details
         .map((detail) => detail.message);
         console.log(errors);
-        return res.sendStatus(422);
+        return res.status(422).send(errors);
     }
 
     const {to, text, type} = req.body;
-    const {from} = req.headers;
-    if (!from)
-        return res.sendStatus(422);
+    const {user} = req.headers;
+    if (!user)
+        return res.status(422).send('Remetente não informado');
 
     try {
         const receiverFound = await db.
         collection('participants').findOne({name:to});
         if (!receiverFound)
-           return res.sendStatus(422);
+           return res.status(422).send('Destinatário não está na sala');
         const senderFound = await db.
-        collection('participants').findOne({name:from});
+        collection('participants').findOne({name:user});
         if (!senderFound)
-            return res.sendStatus(422);
+            return res.status(422).send('Remetente não está na sala');
     } catch(error){
         console.log(error);
         return res.status(500).send(error.message);
     }
 
     res.locals.message = {
-        from,
+        from:user,
         to,
         text,
         type,
