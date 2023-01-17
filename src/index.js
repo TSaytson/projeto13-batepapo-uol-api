@@ -12,34 +12,34 @@ app.use(cors());
 app.use(participantsRoutes);
 app.use(messagesRoutes);
 
-setInterval(async () => {
+// setInterval(async () => {
 
-    try {
-        const inactiveParticipants = await db
-        .collection('participants').find({
-            lastStatus: {$lte: Date.now() - 10000}
-        }).toArray();
-        if (inactiveParticipants){
-            const messages = inactiveParticipants.map(
-                (participant) => {
-                    return {
-                    from: participant.name,
-                    to: 'Todos',
-                    text: 'sai da sala...',
-                    type: 'status',
-                    time: dayjs().format('HH:mm:ss')
-                    }
-                }
-            )
-            await db.collection('messages').insertMany(messages);
-        }
-        await db.collection('participants').deleteMany({
-            lastStatus: {$lte: Date.now() - 10000}
-        })
-    } catch (error){
-        console.log(error);
-    }
+//     try {
+//         const inactiveParticipants = await db
+//         .collection('participants').find({
+//             lastStatus: {$lte: Date.now() - 10000}
+//         }).toArray();
+//         if (inactiveParticipants){
+//             const messages = inactiveParticipants.map(
+//                 (participant) => {
+//                     return {
+//                     from: participant.name,
+//                     to: 'Todos',
+//                     text: 'sai da sala...',
+//                     type: 'status',
+//                     time: dayjs().format('HH:mm:ss')
+//                     }
+//                 }
+//             )
+//             await db.collection('messages').insertMany(messages);
+//         }
+//         await db.collection('participants').deleteMany({
+//             lastStatus: {$lte: Date.now() - 10000}
+//         })
+//     } catch (error){
+//         console.log(error);
+//     }
 
-}, 15000)
+// }, 15000)
 
 app.listen(5000, console.log('Server running on port 5000'));

@@ -24,8 +24,9 @@ export async function getMessages(req, res) {
     const { limit } = req.query;
     const {user} = req.headers;
     if (Number(limit) <= 0 || (limit && isNaN(limit)))
-        return res.sendStatus(422)
-
+        return res.status(422).send('limit inválido');
+    if (!user)
+        return res.status(422).send('Usuário não informado');
     try {
         if (Number(limit)) {
             const messages = await db.
@@ -35,7 +36,7 @@ export async function getMessages(req, res) {
             const allowedMessages = messages
             .filter((message) => 
                 (message.type === 'private_message' &&
-                message.to === user) || 
+                message.to === user || message.from === user) || 
                 message.type !== 'private_message'
             )
             return res.status(200).send(allowedMessages);
