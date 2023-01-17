@@ -12,7 +12,7 @@ export async function postMessage(req, res) {
                 type,
                 time: dayjs(Date.now()).format('HH:mm:ss')
             })
-        res.status(200).send('Mensagem enviada')
+        return res.sendStatus(201);
     } catch (error) {
         console.log(error);
         res.status(500).send(error.message);

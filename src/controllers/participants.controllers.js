@@ -19,7 +19,7 @@ export async function registerParticipant(req, res){
         await db.collection('participants').
         insertOne({
             name,
-            lastStatus: dayjs(Date.now()).format('HH:mm:ss')
+            lastStatus: dayjs(Date.now()).unix()
         });
         await db.collection('messages').insertOne({
             from:name,
