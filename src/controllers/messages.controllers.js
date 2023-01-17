@@ -2,15 +2,16 @@ import dayjs from "dayjs";
 import db from "../database/db.js";
 
 export async function postMessage(req, res) {
-    const { to, text, type } = res.locals.message;
+    const {from, to, text, type } = res.locals.message;
 
     try {
         await db.collection('messages')
             .insertOne({
+                from,
                 to,
                 text,
                 type,
-                time: dayjs(Date.now()).format('HH:mm:ss')
+                time: dayjs().format('HH:mm:ss')
             })
         return res.sendStatus(201);
     } catch (error) {

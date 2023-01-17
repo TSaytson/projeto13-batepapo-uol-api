@@ -5,7 +5,7 @@ export async function messageValidation(req, res, next){
     const validation = messageSchema.validate(
         req.body, {abortEarly:false}
     );
-    const {user} = req.headers;
+    const {from} = req.headers;
 
     if (validation.error){
         const errors = validation.error.details
@@ -22,7 +22,7 @@ export async function messageValidation(req, res, next){
         if (!receiverFound)
            return res.sendStatus(404);
         const senderFound = await db.
-        collection('participants').findOne({name:user});
+        collection('participants').findOne({name:from});
         if (!senderFound)
             return res.sendStatus(404);
     } catch(error){
@@ -31,6 +31,7 @@ export async function messageValidation(req, res, next){
     }
 
     res.locals.message = {
+        from,
         to,
         text,
         type,
