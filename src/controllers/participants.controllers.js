@@ -46,7 +46,7 @@ export async function updateParticipant(req, res){
         else{
             await db.collection('participants').
             updateOne({name:user}, {$set: {
-                lastStatus: dayjs(Date.now()).format('HH:mm:ss')
+                lastStatus: Date.now()
             }});
         }
         res.sendStatus(200);
